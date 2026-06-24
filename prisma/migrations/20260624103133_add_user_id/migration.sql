@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "File" ADD COLUMN     "userId" TEXT,
+ALTER COLUMN "key" DROP DEFAULT;

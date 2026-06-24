@@ -1,9 +1,21 @@
-import { Controller, Delete, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { FilesService } from './files.service';
+import { ClerkAuthGuard } from '../auth/clerk.guard';
+import { UserId } from '../auth/user-id.decorator';
 
 @Controller('files')
+@UseGuards(ClerkAuthGuard)
 export class FilesController {
   constructor(private filesService: FilesService) {}
 
@@ -19,22 +31,22 @@ export class FilesController {
       },
     }),
   )
-  upload(@UploadedFile() file: Express.Multer.File) {
-    return this.filesService.upload(file);
+  upload(@UploadedFile() file: Express.Multer.File, @UserId() userId: string) {
+    return this.filesService.upload(file, userId);
   }
 
   @Get()
-  findAll() {
-    return this.filesService.findAll();
+  findAll(@UserId() userId: string) {
+    return this.filesService.findAll(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.filesService.findOne(id);
+  findOne(@Param('id') id: string, @UserId() userId: string) {
+    return this.filesService.findOne(id, userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.filesService.remove(id);
+  remove(@Param('id') id: string, @UserId() userId: string) {
+    return this.filesService.remove(id, userId);
   }
 }
